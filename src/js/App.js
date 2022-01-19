@@ -1,5 +1,6 @@
 import Button from "./Button";
 import Head from "./Head"
+import Head2 from "./Head2"
 import styles from "../css/App.module.css";
 import Join from './auth/Join';
 import Home from './Home';
@@ -22,6 +23,7 @@ function App() {
   return (
     <div>
       <Head/>
+      <Head2/>
       <Routes>
       <Route path="/" element={<Home/>}/>
       <Route path="/join" element={<Join/>}/>

@@ -1,11 +1,13 @@
 
 import React from 'react';
+import { Container } from 'react-bootstrap';
 
 /**
  * 함수형 컴포넌트 스니펫입니다.
  */
 const Home = () => {
   return (
+    
     <div>
        <div className="row">
           <div className="col-md-4">
