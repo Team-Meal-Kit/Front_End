@@ -2,7 +2,7 @@ import Head from "./Head"
 import Join from './auth/Join';
 import Home from './Home';
 import Login from './auth/Login';
-
+import Product from "./Product";
 import {Route,Routes} from 'react-router-dom';
 import  React from "react";
 function App() {
@@ -25,9 +25,10 @@ function App() {
     </div>
     
       <Routes>
-      <Route path="/" element={<Home/>}/>
-      <Route path="/join" element={<Join/>}/>
-      <Route path="/Login" element={<Login/>}/>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/join" element={<Join/>}/>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/product" element={<Product/>}/>
       </Routes>
    
     </>

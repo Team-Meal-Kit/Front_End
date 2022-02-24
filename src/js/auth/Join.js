@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
-import axios from 'axios';
+import axios from '../CustomAxios';
 import Home from '../Home';
 import { Route,Router, Routes} from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -19,7 +19,8 @@ const Join = () => {
     const [passwordConfirm, setPasswordConfirm] = useState('')
     const [address, setAddress] = useState("");
     const [phone, setPhone] = useState("");
-    const [bierthDay, setBierthDay] = useState("");
+    const [birthDay, setBirthDay] = useState("");
+    
   
     //오류메시지 상태저장
     const [userNameMessage, setUserNameMessage] = useState('')
@@ -28,7 +29,7 @@ const Join = () => {
     const [passwordConfirmMessage, setPasswordConfirmMessage] = useState('')
     const [addressMessage, setAddressMessage] = useState(false);
     const [phoneMessage, setPhoneMessage] = useState(false);
-    const [bierthDayMessage, setBierthDayMessage] = useState(false);
+    const [birthDayMessage, setBirthDayMessage] = useState(false);
     
     // 유효성 검사
     const [isUserName, setIsUserName] = useState(false)
@@ -37,25 +38,30 @@ const Join = () => {
     const [isPasswordConfirm, setIsPasswordConfirm] = useState(false)
     const [isAddress, setIsAddress] = useState(false);
     const [isPhone, setIsPhone] = useState(false);
-    const [isBierthDay, setIsBierthDay] = useState(false);
+    const [isBirthDay, setIsBirthDay] = useState(false);
+    const [isEmailCheck,setIsEmailCheck] = useState(false);
     
     const onEmailCheck = useCallback(
         async(e) =>{
             e.preventDefault()
             try{
                 await axios
-                .get("https://5d2e86fa-7992-4716-992a-7f1300e8c748.mock.pstmn.io/",{
+                .get("https://5d2e86fa-7992-4716-992a-7f1300e8c748.mock.pstmn.io/client/user-emails/"+userEmail,{
                 // .get("http://58.124.240.242:9876/client",{
-                email: userEmail,
+           
             })
             .then((res)=>{
                 console.log('response:',res)
                 if(res.status===200){
-                    if(res.data.status===200)
-                    {
-                        console.log("test")
-                    }
+                  setUserEmailMessage("사용할수있는 이메일입니다.")
+                  setIsEmailCheck(true);
                 }
+                else if(res.status===409)
+                {
+                  setUserEmailMessage("사용할수없는 이메일입니다.")
+                  setIsEmailCheck(false);
+                }//테스트해보기
+                
             })
         } catch(err)
         {
@@ -75,27 +81,23 @@ const Join = () => {
               email: userEmail,
               address: address,
               phone: phone,
-              birthDay: bierthDay,
+              birthDay: birthDay,
             })
             .then((res) => {
                 console.log('response:', res)
                 if (res.status === 200) {
-                    if(res.data.status===200)
-                    {
+                   
                         alert('정상적으로 회원가입을 요청하였습니다.\r이메일을 확인해 주세요.')
-                    }
-                    else
-                    {
-                        alert('회원가입중 문제가 발생하였습니다.')
-                    }
-
-              }
+                        document.location.href = '/'
+                        console.log("정상적으로 요청")
+                }
+                
             })
         } catch (err) {
           console.error(err)
         }
       },
-      [userEmail, userName, password,address,phone,bierthDay]
+      [userEmail, userName, password,address,phone,birthDay]
     )
   
     // 이름
@@ -120,9 +122,11 @@ const Join = () => {
         setUserEmailMessage('이메일 형식이 틀렸어요! 다시 확인해주세요 ㅜ ㅜ')
         setIsUserEmail(false)
       } else {
-        setUserEmailMessage('올바른 이메일 형식이에요 : )')
-        // if()
-        setIsUserEmail(true)
+        setUserEmailMessage('올바른 이메일 형식이에요. 이메일중복검사를 진행해주세요.')
+        if (setIsEmailCheck)
+        {
+          setIsUserEmail(true)
+        }
       }
     }, [])
   
@@ -178,16 +182,15 @@ const Join = () => {
     },
        []
     )
-    const onChagneBierthDay = useCallback((e) => {
-        setIsBierthDay(true);
-        setBierthDayMessage('설정중 입니다.')
-        setBierthDay(e.target.value)    
+    const onChagneBirthDay = useCallback((e) => {
+        setIsBirthDay(true);
+        setBirthDayMessage('설정중 입니다.')
+        setBirthDay(e.target.value)    
     },
     []
     )
     return (
         <div>
-        <br/>
             <Container className="panel">
                 <Form className='pt-5'>
                     <Form.Group as={Row} className="mb-3" controlId="formBasicEmail" >
@@ -199,9 +202,9 @@ const Join = () => {
                             <Form.Control maxLength={30} type="email" placeholder="Email Address" value={userEmail} onChange={onChangeUserEmail}/>
                         </Col>
                         <Col>
-                            <Button variant="outline-danger" type="submit" >
-                                이메일 중복 검사
-                            </Button>
+                        <Button variant="secondary" onClick={onEmailCheck} disabled={!(isUserEmail)}>
+                            이메일중복 검사
+                        </Button>
                         </Col>
                             {userEmail.length > 0 && <span className={`message ${isUserEmail ? 'success' : 'error'}`}>{userEmailMessage}</span>}
                         </Row>
@@ -267,14 +270,14 @@ const Join = () => {
                     </Row>
                     </Form.Group>
                     {/*생일은 예외처리 다시해야한다*/} 
-                    <Form.Group as={Row} className="mb-3" controlId="formBierthDay">
+                    <Form.Group as={Row} className="mb-3" controlId="formBirthDay">
                     <Row>
                         <Col xs={1}>
                             <Form.Label>생일</Form.Label>
                         </Col>
                         <Col sm>
-                            <Form.Control type="text" placeholder="BierthDay" value={bierthDay} onChange={onChagneBierthDay}/>
-                            {bierthDay.length > 0 && <span className={`message ${isBierthDay ? 'success' : 'error'}`}>{bierthDayMessage}</span>}
+                            <Form.Control type="text" placeholder="BirthDay" value={birthDay} onChange={onChagneBirthDay}/>
+                            {birthDay.length > 0 && <span className={`message ${isBirthDay ? 'success' : 'error'}`}>{birthDayMessage}</span>}
                         </Col>
                     </Row>
                     </Form.Group>
@@ -282,7 +285,7 @@ const Join = () => {
                     <br/>
 
                     <div className="d-grid gap-1">
-                        <Button variant="secondary" onClick={onSubmit} disabled={!(isUserName&&isUserEmail&&isPassword&&isPasswordConfirm&&isAddress&&isBierthDay&&isPhone)}>
+                        <Button variant="secondary" onClick={onSubmit} disabled={!(isUserName&&isEmailCheck&&isPassword&&isPasswordConfirm&&isAddress&&isBirthDay&&isPhone)}>
                             Sign Up
                         </Button>
                     </div>
