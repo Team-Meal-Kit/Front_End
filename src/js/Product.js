@@ -16,8 +16,7 @@ const Product = () => {
       e.preventDefault()
       try {
         await axios
-         .post("https://5d2e86fa-7992-4716-992a-7f1300e8c748.mock.pstmn.io/review", {
-          // .post("http://58.124.240.242:9876/client",{
+         .post("", {
             email: this.userEmail,
             //token: token,
           })
